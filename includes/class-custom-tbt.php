@@ -138,6 +138,7 @@ class Custom_Tbt {
 	private function set_locale() {
 
 		$plugin_i18n = new Custom_Tbt_i18n();
+		$plugin_i18n->set_domain( $this->plugin_name );
 
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
 
@@ -152,13 +153,38 @@ class Custom_Tbt {
 	 */
 	private function define_admin_hooks() {
 
-		$plugin_admin = new Custom_Tbt_Admin( $this->get_plugin_name(), $this->get_version() );
+		$plugin_admin    = new Custom_Tbt_Admin(                $this->get_plugin_name(), $this->get_version() );
+		$plugin_settings = new Custom_Tbt_Admin_Settings(       $this->get_plugin_name(), $this->get_version() );
+		//$plugin_widget_contact = new Custom_Tbt_Widget_Contact( $this->get_plugin_name(), $this->get_version() );
+
+
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
+		$this->loader->add_action( 'admin_menu', $plugin_settings, 'setup_plugin_options_menu' );
+		//$this->loader->add_action( 'admin_init', $plugin_settings, 'initialize_someother_options' );
+		$this->loader->add_action( 'admin_init', $plugin_settings, 'initialize_contacts_options' );
+		$this->loader->add_action( 'admin_init', $plugin_settings, 'initialize_input_examples' );
+
+
+		//$this->loader->add_action( 'widgets_init', $plugin_admin, 'register_custom_tbt_widget_contact' );
+
+
+		// Add menu item
+		$this->loader->add_action('admin_menu', $plugin_admin, 'add_plugin_admin_menu');
+
+		// Add Settings link to the plugin
+		$plugin_basename = plugin_basename( plugin_dir_path( __DIR__ ) . $this->plugin_name . '.php' );
+		$this->loader->add_filter( 'plugin_action_links_' . $plugin_basename, $plugin_admin, 'add_action_links' );
+
+		// Save/Update our plugin options
+		$this->loader->add_action('admin_init', $plugin_admin, 'options_update');
+
+
+
 		// test hook
-		$this->loader->add_action( 'admin_bar_menu', $plugin_admin, 'add_plugins_link_to_admin_toolbar' );
+		//$this->loader->add_action( 'admin_bar_menu', $plugin_admin, 'add_plugins_link_to_admin_toolbar' );
 
 	}
 
@@ -180,6 +206,9 @@ class Custom_Tbt {
 		// test hook
 		## JS в head документа
 		//$this->loader->add_action( 'wp_head', $plugin_public ,'hook_javascript');
+
+
+		$this->loader->add_action( 'wp_footer', $plugin_public, 'add_text_footer' );
 
 
 

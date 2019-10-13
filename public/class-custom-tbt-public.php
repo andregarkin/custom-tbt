@@ -40,6 +40,8 @@ class Custom_Tbt_Public {
 	 */
 	private $version;
 
+	private $my_plugin_options;
+
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -51,6 +53,10 @@ class Custom_Tbt_Public {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+
+
+
+		$this->my_plugin_options = get_option($this->plugin_name);
 
 	}
 
@@ -104,6 +110,18 @@ class Custom_Tbt_Public {
 	## JS в head документа
 	public function hook_javascript() {
 		echo "<script> alert('Page is loading...'); </script>";
+	}
+
+
+	/**
+	 * The function of adding text to the footer
+	 */
+	public function add_text_footer(){
+
+		if( !empty($this->my_plugin_options['footer_text']) )
+		{
+			echo '<h3 class="center">'.$this->my_plugin_options['footer_text'].'</h3>';
+		}
 	}
 
 
